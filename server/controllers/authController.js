@@ -11,7 +11,7 @@ const register = async (req, res) => {
 
     let user = await User.find({email});
 
-    if (user) {
+    if (user.length) {
         throw new BadRequestError('Email already in use');
     }
 
