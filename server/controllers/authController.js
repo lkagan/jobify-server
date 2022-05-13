@@ -1,25 +1,6 @@
 import User from '../models/User.js';
-import {StatusCodes} from 'http-status-codes';
-
-class CustomAPIError extends Error {
-    constructor(message) {
-        super(message);
-    }
-}
-
-class BadRequestError extends CustomAPIError {
-    constructor(message) {
-        super(message);
-        this.statusCode = StatusCodes.BAD_REQUEST;
-    }
-}
-
-class NotFoundError extends CustomAPIError {
-    constructor(message) {
-        super(message);
-        this.statusCode = StatusCodes.NOT_FOUND;
-    }
-}
+import { StatusCodes } from 'http-status-codes';
+import { BadRequestError } from "../errors/index.js";
 
 const register = async (req, res) => {
     const {name, email, password} = req.body;
@@ -28,7 +9,13 @@ const register = async (req, res) => {
         throw new BadRequestError('Please provide all values');
     }
 
-    const user = await User.create({name, email, password});
+    let user = await User.find({email});
+
+    if (user) {
+        throw new BadRequestError('Email already in use');
+    }
+
+    user = await User.create({name, email, password});
     res.status(StatusCodes.CREATED).json({user});
 }
 
