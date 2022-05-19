@@ -6,10 +6,15 @@ import connectDB from "./db/connect.js";
 import 'express-async-errors';
 import authRoutes from "./routes/authRoutes.js";
 import jobsRoutes from "./routes/jobsRoutes.js";
+import morgan from 'morgan';
 
 const app = express();
 dotenv.config();
 app.use(express.json());
+
+if (process.env.NODE_ENV !== 'production') {
+    app.use(morgan('dev'));
+}
 
 app.get('/', (req, res) => {
     res.send('Welcome!');
