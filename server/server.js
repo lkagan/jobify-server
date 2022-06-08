@@ -1,6 +1,7 @@
 import express from 'express';
 import notFoundMiddleware from "./middleware/not-found.js";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
+import authenticateMiddleware from './middleware/auth.js'
 import dotenv from 'dotenv';
 import connectDB from "./db/connect.js";
 import 'express-async-errors';
@@ -20,9 +21,11 @@ app.get('/', (req, res) => {
     res.send('Welcome!');
 });
 
+// Routers
 app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/jobs', jobsRoutes);
+app.use('/api/v1/jobs', authenticateMiddleware, jobsRoutes);
 
+// Middleware
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
