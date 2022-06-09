@@ -51,8 +51,31 @@ const login = async (req, res) => {
     });
 }
 
-const update = (req, res) => {
-    res.send('udpate user');
+const update = async (req, res) => {
+    const { email, name, lastName, location } = req.body;
+
+    if (!email || !name || !lastName || !location) {
+        throw new BadRequestError('Please provide all value');
+    }
+
+    try {
+        const user = await User.findById(req.user.userId);
+
+        user.email = email;
+        user.name = name;
+        user.lastName = lastName;
+        user.location = location;
+
+        await user.save();
+
+        res.status(StatusCodes.OK).json({
+            user,
+            token: user.createJWT(),
+            location: user.location
+        });
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 export {register, login, update };
