@@ -1,4 +1,4 @@
-import { BadRequestError } from "../errors/index.js";
+import { BadRequestError, NotFoundError } from "../errors/index.js";
 import Job from "../models/Job.js";
 import { StatusCodes } from "http-status-codes";
 
@@ -29,8 +29,29 @@ const destroy = (req, res) => {
     res.send('destroy');
 }
 
-const update = (req, res) => {
-    res.send('update');
+const update = async (req, res) => {
+    const { id: jobId } = req.params;
+    const { company, position } = req.body;
+
+    if (!company || ! position) {
+        throw new BadRequestError('Please provide all values');
+    }
+
+    const job = await Job.findOne({ _id: jobId });
+
+    if (!job) {
+        throw new NotFoundError(`No job with id ${jobId}`);
+    }
+
+    // check permissions
+
+    const updatedJob = await Job.findOneAndUpdate(
+        { _id: jobId },
+        req.body,
+        { new: true, runValidators: true }
+    );
+
+    res.status(StatusCodes.OK).json({ updatedJob });
 }
 
 const stats = (req, res) => {
