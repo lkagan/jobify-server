@@ -26,25 +26,35 @@ const create = async (req, res) => {
     res.status(StatusCodes.CREATED).json({ job });
 }
 
-const destroy = (req, res) => {
-    res.send('destroy');
+const destroy = async (req, res) => {
+    const { id: jobId } = req.params;
+
+    const job = await Job.findOne({ _id: jobId });
+
+    if (! job) {
+        throw new NotFoundError(`No job with id: ${jobId}`);
+    }
+
+    checkPermissions(req.user, job.createdBy);
+
+    await job.remove();
+    res.status(StatusCodes.OK).json({msg: 'Success! Job removed' });
 }
 
 const update = async (req, res) => {
     const { id: jobId } = req.params;
     const { company, position } = req.body;
 
-    if (!company || ! position) {
+    if (!company || !position) {
         throw new BadRequestError('Please provide all values');
     }
 
     const job = await Job.findOne({ _id: jobId });
 
     if (!job) {
-        throw new NotFoundError(`No job with id ${jobId}`);
+        throw new NotFoundError(`No job with id ${ jobId }`);
     }
 
-    // check permissions
     checkPermissions(req.user, job.createdBy);
 
     const updatedJob = await Job.findOneAndUpdate(
