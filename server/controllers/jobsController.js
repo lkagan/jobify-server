@@ -68,12 +68,15 @@ const update = async (req, res) => {
 }
 
 const stats = async (req, res) => {
-    const stats = await Job.aggregate([
+    let stats = await Job.aggregate([
         { $match: { createdBy: mongoose.Types.ObjectId(req.user.userId) } },
         { $group: { _id: '$status', count: { $sum: 1 } } }
     ]);
 
-    console.log(stats);
+    stats = stats.reduce((acc, curr) => {
+        acc[curr._id] = curr.count;
+        return acc;
+    }, {});
 
     res.status(StatusCodes.OK).json({ stats });
 }
