@@ -2,6 +2,7 @@ import { BadRequestError, NotFoundError } from "../errors/index.js";
 import Job from "../models/Job.js";
 import { StatusCodes } from "http-status-codes";
 import checkPermissions from "../utils/checkPermissions.js";
+import mongoose from 'mongoose';
 
 const index = async (req, res) => {
     const jobs = await Job.find({ createdBy: req.user.userId });
@@ -31,14 +32,14 @@ const destroy = async (req, res) => {
 
     const job = await Job.findOne({ _id: jobId });
 
-    if (! job) {
-        throw new NotFoundError(`No job with id: ${jobId}`);
+    if (!job) {
+        throw new NotFoundError(`No job with id: ${ jobId }`);
     }
 
     checkPermissions(req.user, job.createdBy);
 
     await job.remove();
-    res.status(StatusCodes.OK).json({msg: 'Success! Job removed' });
+    res.status(StatusCodes.OK).json({ msg: 'Success! Job removed' });
 }
 
 const update = async (req, res) => {
@@ -66,8 +67,15 @@ const update = async (req, res) => {
     res.status(StatusCodes.OK).json({ updatedJob });
 }
 
-const stats = (req, res) => {
-    res.send('stats');
+const stats = async (req, res) => {
+    const stats = await Job.aggregate([
+        { $match: { createdBy: mongoose.Types.ObjectId(req.user.userId) } },
+        { $group: { _id: '$status', count: { $sum: 1 } } }
+    ]);
+
+    console.log(stats);
+
+    res.status(StatusCodes.OK).json({ stats });
 }
 
 export { index, create, destroy, update, stats };

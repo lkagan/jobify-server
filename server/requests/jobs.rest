@@ -43,3 +43,8 @@ Authorization: Bearer {{auth_token}}
 DELETE http://localhost:4000/api/v1/jobs/62b8b5944aa1c206864588ae
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
+
+### JobsStats
+GET http://localhost:4000/api/v1/jobs/stats
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
