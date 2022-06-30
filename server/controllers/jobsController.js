@@ -73,12 +73,16 @@ const stats = async (req, res) => {
         { $group: { _id: '$status', count: { $sum: 1 } } }
     ]);
 
+    const defaultStats = { pending: 0, interview: 0, declined: 0 };
+
     stats = stats.reduce((acc, curr) => {
         acc[curr._id] = curr.count;
         return acc;
-    }, {});
+    }, defaultStats);
 
-    res.status(StatusCodes.OK).json({ stats });
+    let monthlyApplications = [];
+
+    res.status(StatusCodes.OK).json({ stats, monthlyApplications });
 }
 
 export { index, create, destroy, update, stats };
