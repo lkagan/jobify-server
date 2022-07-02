@@ -10,7 +10,7 @@ Content-Type: application/json
 > {% client.global.set("auth_token", response.body.token); %}
 
 
-### CreateJob
+### Create
 POST http://localhost:4000/api/v1/jobs
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
@@ -23,13 +23,19 @@ Authorization: Bearer {{auth_token}}
   "jobLocation": "Palm Beach"
 }
 
-### ListJobs
+### List
 GET http://localhost:4000/api/v1/jobs
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
+### Search
+# status=pending
+# jobType=full-time
+GET http://localhost:4000/api/v1/jobs?jobType=full-time
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
-### UpdateJob
+### Update
 PATCH http://localhost:4000/api/v1/jobs/62b8b5944aa1c206864588ae
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
@@ -39,12 +45,12 @@ Authorization: Bearer {{auth_token}}
   "position": "Test position1"
 }
 
-### DeleteJob
+### Delete
 DELETE http://localhost:4000/api/v1/jobs/62b8b5944aa1c206864588ae
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
-### JobsStats
+### Stats
 GET http://localhost:4000/api/v1/jobs/stats
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}

@@ -6,7 +6,18 @@ import mongoose from 'mongoose';
 import moment from 'moment';
 
 const index = async (req, res) => {
-    const jobs = await Job.find({ createdBy: req.user.userId });
+    const { search, status, jobType, sort } = req.query;
+
+    const queryObject = {
+        createdBy: req.user.userId
+    }
+
+    status && status !== 'all' && (queryObject.status = status);
+    jobType && jobType !== 'all' && (queryObject.jobType = jobType);
+
+    let result = Job.find(queryObject);
+
+    const jobs = await result;
 
     res.status(StatusCodes.OK).json({
         jobs,
