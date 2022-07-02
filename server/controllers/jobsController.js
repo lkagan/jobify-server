@@ -3,6 +3,7 @@ import Job from "../models/Job.js";
 import { StatusCodes } from "http-status-codes";
 import checkPermissions from "../utils/checkPermissions.js";
 import mongoose from 'mongoose';
+import moment from 'moment';
 
 const index = async (req, res) => {
     const jobs = await Job.find({ createdBy: req.user.userId });
@@ -98,6 +99,12 @@ const stats = async (req, res) => {
         { $sort: { '_id.year': -1, '_id.month': -1 } },
         { $limit: 6 },
     ]);
+
+    monthlyApplications = monthlyApplications.map((item) => {
+        const { _id: { year, month }, count } = item;
+        const date = moment().month(month - 1).year(year).format('MMM Y');
+        return { date, count };
+    }).reverse();
 
     res.status(StatusCodes.OK).json({ stats, monthlyApplications });
 }
