@@ -29,10 +29,11 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 ### Search
-# status=pending
-# jobType=full-time
+# status=pending | decliend | interview
+# jobType=full-time | part-time | internship
 # search=dev
-GET http://localhost:4000/api/v1/jobs?jobType=full-time&search=dev
+# sort=latest | oldest | a-z | z-a
+GET http://localhost:4000/api/v1/jobs?jobType=full-time&search=&sort=latest
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 

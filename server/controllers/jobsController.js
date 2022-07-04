@@ -18,6 +18,15 @@ const index = async (req, res) => {
 
     let result = Job.find(queryObject);
 
+    const sortKeys = {
+        'latest': { createdAt: -1 },
+        'oldest': { createdAt: 1 },
+        'a-z': { position: 1 },
+        'z-a': { position: -1 },
+    }
+
+    sort && Object.keys(sortKeys).includes(sort) && result.sort(sortKeys[sort]);
+
     const jobs = await result;
 
     res.status(StatusCodes.OK).json({
