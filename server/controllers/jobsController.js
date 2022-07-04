@@ -14,6 +14,7 @@ const index = async (req, res) => {
 
     status && status !== 'all' && (queryObject.status = status);
     jobType && jobType !== 'all' && (queryObject.jobType = jobType);
+    search && (queryObject.position = { $regex: search, $options: 'i' });
 
     let result = Job.find(queryObject);
 
