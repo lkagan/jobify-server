@@ -8,15 +8,15 @@ import moment from 'moment';
 const index = async (req, res) => {
     const { search, status, jobType, sort } = req.query;
 
-    const queryObject = {
+    const constraints = {
         createdBy: req.user.userId
     }
 
-    status && status !== 'all' && (queryObject.status = status);
-    jobType && jobType !== 'all' && (queryObject.jobType = jobType);
-    search && (queryObject.position = { $regex: search, $options: 'i' });
+    status && status !== 'all' && (constraints.status = status);
+    jobType && jobType !== 'all' && (constraints.jobType = jobType);
+    search && (constraints.position = { $regex: search, $options: 'i' });
 
-    let result = Job.find(queryObject);
+    let query = Job.find(constraints);
 
     const sortKeys = {
         'latest': { createdAt: -1 },
@@ -25,15 +25,18 @@ const index = async (req, res) => {
         'z-a': { position: -1 },
     }
 
-    sort && Object.keys(sortKeys).includes(sort) && result.sort(sortKeys[sort]);
+    sort && Object.keys(sortKeys).includes(sort) && query.sort(sortKeys[sort]);
 
-    const jobs = await result;
+    const page = +req.query.page || 1;
+    const limit = +req.query.limit || 10;
+    const skip = (page - 1) * limit;
+    query.skip(skip).limit(limit);
 
-    res.status(StatusCodes.OK).json({
-        jobs,
-        totalJobs: jobs.length,
-        numOfPages: 1
-    });
+    const jobs = await query;
+    const totalJobs = await Job.countDocuments(constraints);
+    const numOfPages = Math.ceil(totalJobs / limit);
+
+    res.status(StatusCodes.OK).json({ jobs, totalJobs, numOfPages });
 }
 
 const create = async (req, res) => {
