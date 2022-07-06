@@ -24,7 +24,9 @@ Authorization: Bearer {{auth_token}}
 }
 
 ### List
-GET http://localhost:4000/api/v1/jobs
+# limit
+# page
+GET http://localhost:4000/api/v1/jobs?limit=2&page=1
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
