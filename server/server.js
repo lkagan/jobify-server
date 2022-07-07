@@ -8,10 +8,18 @@ import 'express-async-errors';
 import authRoutes from "./routes/authRoutes.js";
 import jobsRoutes from "./routes/jobsRoutes.js";
 import morgan from 'morgan';
+import helmet from "helmet";
+import xss from 'xss-clean';
+import mongoSanitize from 'express-mongo-sanitize';
 
 const app = express();
 dotenv.config();
 app.use(express.json());
+
+app.use(express.json());
+app.use(helmet());
+app.use(xss());
+app.use(mongoSanitize());
 
 if (process.env.NODE_ENV !== 'production') {
     app.use(morgan('dev'));
